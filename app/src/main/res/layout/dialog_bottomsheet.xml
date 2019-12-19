@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:background="@color/transparent"-->
+<!--    android:orientation="vertical">-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="552dp"
+    android:layout_alignParentBottom="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/dialog_bottomsheet_rv_lists"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:layout_marginTop="50dp"
+        android:background="@color/white" />
+
+    <RelativeLayout
+        android:id="@+id/dialog_bottomsheet_rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/select_elevation">
+
+        <ImageView
+            android:id="@+id/dialog_bottomsheet_iv_close"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:padding="7dp"
+            android:src="@mipmap/ic_close_black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="10dp"
+            android:text="评论"
+            android:textColor="@color/black_21"
+            android:textSize="@dimen/text_size_13"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_comment"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_below="@+id/dialog_bottomsheet_rv_lists"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="1dp"
+            android:text="留下你的精彩评论吧~~"
+            android:textColor="@color/color_6f"
+            android:textSize="@dimen/text_size_15" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:padding="5dp"
+            android:src="@mipmap/ic_send_comment" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/gray_d8" />
+
+
+    </RelativeLayout>
+
+</RelativeLayout><!--</RelativeLayout>-->
