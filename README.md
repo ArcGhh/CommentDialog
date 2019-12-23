@@ -1,5 +1,9 @@
 # CommentDialog
 这是一个Android评论框，类似抖音评论弹框
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20191223183926488.jpg)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20191223183944984.jpg)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20191223184007906.jpg)
+
 
 最近公司有个需求，就是仿抖音弹窗评论，我也是在网上找了一些资料，并未找到有人实现了此功能，于是我就根据一些资料自己去实现
 这个弹窗可以用 Design 中的BottomSheetDialog来实现可以完全把它当做一个dialog来做，在dialog基础上又增加了下拉回弹 下拉关闭效果，
