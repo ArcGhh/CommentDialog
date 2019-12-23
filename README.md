@@ -1,5 +1,6 @@
 # CommentDialog
 这是一个Android评论框，类似抖音评论弹框
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191223183926488.jpg)
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191223183944984.jpg)
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191223184007906.jpg)
