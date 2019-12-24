@@ -199,8 +199,10 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
                 switch ((int) view1.getTag()) {
                     case CommentEntity.TYPE_COMMENT_PARENT:
                         if (view1.getId() == R.id.rl_group) {
+                            //添加二级评论
                             CommentMultiActivity.this.initInputTextMsgDialog((View) view1.getParent(), false, bottomSheetAdapter.getData().get(position), position);
                         } else if (view1.getId() == R.id.ll_like) {
+                            //一级评论点赞 项目中还得通知服务器 成功才可以修改
                             FirstLevelBean bean = (FirstLevelBean) bottomSheetAdapter.getData().get(position);
                             bean.setLikeCount(bean.getLikeCount() + (bean.getIsLike() == 0 ? 1 : -1));
                             bean.setIsLike(bean.getIsLike() == 0 ? 1 : 0);
@@ -212,8 +214,10 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
                     case CommentEntity.TYPE_COMMENT_CHILD:
 
                         if (view1.getId() == R.id.rl_group) {
+                            //添加二级评论（回复）
                             CommentMultiActivity.this.initInputTextMsgDialog(view1, true, bottomSheetAdapter.getData().get(position), position);
                         } else if (view1.getId() == R.id.ll_like) {
+                            //二级评论点赞 项目中还得通知服务器 成功才可以修改
                             SecondLevelBean bean = (SecondLevelBean) bottomSheetAdapter.getData().get(position);
                             bean.setLikeCount(bean.getLikeCount() + (bean.getIsLike() == 0 ? 1 : -1));
                             bean.setIsLike(bean.getIsLike() == 0 ? 1 : 0);
@@ -226,7 +230,7 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
 
                         break;
                     case CommentEntity.TYPE_COMMENT_MORE:
-
+                        //在项目中是从服务器获取数据，其实就是二级评论分页获取
                         CommentMoreBean moreBean = (CommentMoreBean) bottomSheetAdapter.getData().get(position);
                         SecondLevelBean secondLevelBean = new SecondLevelBean();
                         secondLevelBean.setContent("more comment" + 1);

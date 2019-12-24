@@ -51,6 +51,7 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
 
     }
 
+    //初始化数据 在项目中是从服务器获取数据
     private void initData() {
         for (int i = 0; i < 10; i++) {
             FirstLevelBean firstLevelBean = new FirstLevelBean();
@@ -156,11 +157,13 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
                 FirstLevelBean firstLevelBean = bottomSheetAdapter.getData().get(position);
                 if (firstLevelBean == null) return;
                 if (view1.getId() == R.id.ll_like) {
+                    //一级评论点赞 项目中还得通知服务器 成功才可以修改
                     firstLevelBean.setLikeCount(firstLevelBean.getLikeCount() + (firstLevelBean.getIsLike() == 0 ? 1 : -1));
                     firstLevelBean.setIsLike(firstLevelBean.getIsLike() == 0 ? 1 : 0);
                     data.set(position, firstLevelBean);
                     bottomSheetAdapter.notifyItemChanged(firstLevelBean.getPosition());
                 } else if (view1.getId() == R.id.rl_group) {
+                    //添加二级评论
                     CommentSingleActivity.this.initInputTextMsgDialog((View) view1.getParent(), false, firstLevelBean.getHeadImg(), position);
                 }
             }
@@ -275,6 +278,7 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
         return displayMetrics.heightPixels;
     }
 
+    //在项目中是从服务器获取数据，其实就是二级评论分页获取
     @Override
     public void onMoreClick(View layout, int position) {
         FirstLevelBean firstLevelBean = data.get(position);
@@ -296,11 +300,14 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
         sort();
     }
 
+    //添加二级评论（回复某人）
     @Override
     public void onItemClick(View layout, SecondLevelBean bean, int position) {
         initInputTextMsgDialog(layout, true, bean.getHeadImg(), position);
     }
 
+    //二级评论点赞 本地数据更新喜欢状态
+    // 在项目中是还需要通知服务器成功才可以修改本地数据
     @Override
     public void onLikeClick(View layout, SecondLevelBean bean, int position) {
         bean.setLikeCount(bean.getLikeCount() + (bean.getIsLike() == 1 ? -1 : 1));
@@ -309,7 +316,7 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
         bottomSheetAdapter.notifyItemChanged(bean.getPosition());
     }
 
-
+    //在项目中是从服务器获取数据，其实就是一级评论分页获取
     @Override
     public void onLoadMoreRequested() {
         if (data.size() >= totalCount) {
