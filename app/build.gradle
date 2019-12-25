@@ -53,7 +53,7 @@ android {
 }
 
 static def choose(String v, String versionName, Object variant) {
-    return "Meetacg_" + v + "_v${versionName}_${variant.productFlavors.name[0]}_${buildTime()}.apk"
+    return "CommentDialog_" + v + "_v${versionName}_${variant.productFlavors.name[0]}_${buildTime()}.apk"
 }
 
 static def buildTime() {
