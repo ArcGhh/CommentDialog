@@ -5,12 +5,16 @@ android {
     buildToolsVersion "28.0.3"
     defaultConfig {
         applicationId "com.test.commentdialog"
-        minSdkVersion 15
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.test.runner.AndroidJUnitRunner"
         flavorDimensions "default"
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
 
     }
     buildTypes {
@@ -74,10 +78,13 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
 
-    //圆角圆形图片控件 只要是可以带边框
+    //圆角圆形图片控件 主要是可以带边框
     implementation 'com.makeramen:roundedimageview:2.3.0'
 
     //屏幕适配
     implementation 'me.jessyan:autosize:1.1.2'
+
+    //音乐播放器
+//    implementation 'com.kunminx.player:player:1.1.6'
 
 }

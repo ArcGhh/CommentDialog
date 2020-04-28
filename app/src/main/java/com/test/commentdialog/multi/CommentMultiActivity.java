@@ -2,6 +2,8 @@ package com.test.commentdialog.multi;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
@@ -10,6 +12,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -22,6 +26,7 @@ import com.test.commentdialog.bean.CommentMoreBean;
 import com.test.commentdialog.bean.FirstLevelBean;
 import com.test.commentdialog.bean.SecondLevelBean;
 import com.test.commentdialog.dialog.InputTextMsgDialog;
+import com.test.commentdialog.util.RecyclerViewUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +48,14 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
     private RecyclerView rv_dialog_lists;
     private long totalCount = 22;
     private int offsetY;
+    private int positionCount = 0;
+    private RecyclerViewUtil mRecyclerViewUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment_multi);
+        mRecyclerViewUtil = new RecyclerViewUtil();
         initData();
         dataSort(0);
         showSheetDialog();
@@ -99,6 +107,7 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
      * 对数据重新进行排列
      * 目的是为了让一级评论和二级评论同为item
      * 解决滑动卡顿问题
+     *
      * @param position
      */
     private void dataSort(int position) {
@@ -171,19 +180,10 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
         rv_dialog_lists = (RecyclerView) view.findViewById(R.id.dialog_bottomsheet_rv_lists);
         RelativeLayout rl_comment = view.findViewById(R.id.rl_comment);
 
-        iv_dialog_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomSheetDialog.dismiss();
-            }
-        });
-
-        rl_comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //添加二级评论
-                initInputTextMsgDialog(null, false, null, -1);
-            }
+        iv_dialog_close.setOnClickListener(v -> bottomSheetDialog.dismiss());
+        rl_comment.setOnClickListener(v -> {
+            //添加二级评论
+            initInputTextMsgDialog(null, false, null, -1);
         });
 
         bottomSheetAdapter = new CommentDialogMutiAdapter(data);
@@ -193,6 +193,37 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
         bottomSheetAdapter.setOnLoadMoreListener(this, rv_dialog_lists);
         rv_dialog_lists.setAdapter(bottomSheetAdapter);
 
+        initListener();
+
+        bottomSheetDialog = new BottomSheetDialog(this, R.style.dialog);
+        bottomSheetDialog.setContentView(view);
+        bottomSheetDialog.setCanceledOnTouchOutside(true);
+        BottomSheetBehavior mDialogBehavior = BottomSheetBehavior.from((View) view.getParent());
+        mDialogBehavior.setPeekHeight(getWindowHeight());
+
+        //dialog滑动监听
+        mDialogBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    mDialogBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                } else if (newState == BottomSheetBehavior.STATE_SETTLING) {
+                    if (slideOffset <= -0.28) {
+                        //当向下滑动时 值为负数
+                        bottomSheetDialog.dismiss();
+                    }
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                CommentMultiActivity.this.slideOffset = slideOffset;//记录滑动值
+            }
+        });
+    }
+
+    private void initListener() {
+        // 点击事件
         bottomSheetAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view1, int position) {
@@ -257,35 +288,9 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
 
             }
         });
-
-        bottomSheetDialog = new BottomSheetDialog(this, R.style.dialog);
-        bottomSheetDialog.setContentView(view);
-        bottomSheetDialog.setCanceledOnTouchOutside(true);
-        final BottomSheetBehavior mDialogBehavior = BottomSheetBehavior.from((View) view.getParent());
-        mDialogBehavior.setPeekHeight(getWindowHeight());
-
-        //dialog滑动监听
-        mDialogBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    mDialogBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                } else if (newState == BottomSheetBehavior.STATE_SETTLING) {
-                    if (slideOffset <= -0.28) {
-                        //当向下滑动时 值为负数
-                        bottomSheetDialog.dismiss();
-                    }
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                CommentMultiActivity.this.slideOffset = slideOffset;//记录滑动值
-            }
-        });
+        //滚动事件
+        if (mRecyclerViewUtil != null) mRecyclerViewUtil.initScrollListener(rv_dialog_lists);
     }
-
-    int positionCount = 0;
 
     private void initInputTextMsgDialog(View view, final boolean isReply, final MultiItemEntity item, final int position) {
         dismissInputDialog();
@@ -298,7 +303,7 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
             inputTextMsgDialog.setmOnTextSendListener(new InputTextMsgDialog.OnTextSendListener() {
                 @Override
                 public void onTextSend(String msg) {
-                    addComment(isReply,item,position,msg);
+                    addComment(isReply, item, position, msg);
                 }
 
                 @Override
@@ -312,7 +317,7 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
     }
 
     //添加评论
-    private void addComment(boolean isReply, MultiItemEntity item, final int position,String msg){
+    private void addComment(boolean isReply, MultiItemEntity item, final int position, String msg) {
         final String userName = "hui";
         if (position >= 0) {
             //添加二级评论
@@ -432,6 +437,13 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
 
     @Override
     protected void onDestroy() {
+        if (mRecyclerViewUtil != null){
+            mRecyclerViewUtil.destroy();
+            mRecyclerViewUtil = null;
+        }
+        bottomSheetAdapter = null;
         super.onDestroy();
     }
+
+
 }

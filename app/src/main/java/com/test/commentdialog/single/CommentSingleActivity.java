@@ -17,9 +17,13 @@ import android.widget.RelativeLayout;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.loadmore.SimpleLoadMoreView;
 import com.test.commentdialog.R;
+import com.test.commentdialog.bean.CommentEntity;
+import com.test.commentdialog.bean.CommentMoreBean;
 import com.test.commentdialog.bean.FirstLevelBean;
 import com.test.commentdialog.bean.SecondLevelBean;
 import com.test.commentdialog.dialog.InputTextMsgDialog;
+import com.test.commentdialog.multi.CommentMultiActivity;
+import com.test.commentdialog.util.RecyclerViewUtil;
 import com.test.commentdialog.widget.VerticalCommentLayout;
 
 import java.util.ArrayList;
@@ -41,11 +45,13 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
     private RecyclerView rv_dialog_lists;
     private long totalCount = 30;//总条数不得超过它
     private int offsetY;
+    private RecyclerViewUtil mRecyclerViewUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment_multi);
+        mRecyclerViewUtil = new RecyclerViewUtil();
         initData();
         showSheetDialog();
 
@@ -126,18 +132,10 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
         rv_dialog_lists = (RecyclerView) view.findViewById(R.id.dialog_bottomsheet_rv_lists);
         RelativeLayout rl_comment = view.findViewById(R.id.rl_comment);
 
-        iv_dialog_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomSheetDialog.dismiss();
-            }
-        });
+        iv_dialog_close.setOnClickListener(v -> bottomSheetDialog.dismiss());
 
-        rl_comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CommentSingleActivity.this.initInputTextMsgDialog(null, false, null, -1);
-            }
+        rl_comment.setOnClickListener(v -> {
+            CommentSingleActivity.this.initInputTextMsgDialog(null, false, null, -1);
         });
 
         bottomSheetAdapter = new CommentDialogSingleAdapter(this);
@@ -145,29 +143,11 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
         rv_dialog_lists.setHasFixedSize(true);
         rv_dialog_lists.setLayoutManager(new LinearLayoutManager(this));
         rv_dialog_lists.setItemAnimator(new DefaultItemAnimator());
-
         bottomSheetAdapter.setLoadMoreView(new SimpleLoadMoreView());
         bottomSheetAdapter.setOnLoadMoreListener(this, rv_dialog_lists);
-
         rv_dialog_lists.setAdapter(bottomSheetAdapter);
 
-        bottomSheetAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-            @Override
-            public void onItemChildClick(BaseQuickAdapter adapter, View view1, int position) {
-                FirstLevelBean firstLevelBean = bottomSheetAdapter.getData().get(position);
-                if (firstLevelBean == null) return;
-                if (view1.getId() == R.id.ll_like) {
-                    //一级评论点赞 项目中还得通知服务器 成功才可以修改
-                    firstLevelBean.setLikeCount(firstLevelBean.getLikeCount() + (firstLevelBean.getIsLike() == 0 ? 1 : -1));
-                    firstLevelBean.setIsLike(firstLevelBean.getIsLike() == 0 ? 1 : 0);
-                    data.set(position, firstLevelBean);
-                    bottomSheetAdapter.notifyItemChanged(firstLevelBean.getPosition());
-                } else if (view1.getId() == R.id.rl_group) {
-                    //添加二级评论
-                    CommentSingleActivity.this.initInputTextMsgDialog((View) view1.getParent(), false, firstLevelBean.getHeadImg(), position);
-                }
-            }
-        });
+        initListener();
 
         bottomSheetDialog = new BottomSheetDialog(this, R.style.dialog);
         bottomSheetDialog.setContentView(view);
@@ -193,6 +173,26 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
 
             }
         });
+    }
+
+    private void initListener() {
+        // 点击事件
+        bottomSheetAdapter.setOnItemChildClickListener((adapter, view1, position) -> {
+            FirstLevelBean firstLevelBean = bottomSheetAdapter.getData().get(position);
+            if (firstLevelBean == null) return;
+            if (view1.getId() == R.id.ll_like) {
+                //一级评论点赞 项目中还得通知服务器 成功才可以修改
+                firstLevelBean.setLikeCount(firstLevelBean.getLikeCount() + (firstLevelBean.getIsLike() == 0 ? 1 : -1));
+                firstLevelBean.setIsLike(firstLevelBean.getIsLike() == 0 ? 1 : 0);
+                data.set(position, firstLevelBean);
+                bottomSheetAdapter.notifyItemChanged(firstLevelBean.getPosition());
+            } else if (view1.getId() == R.id.rl_group) {
+                //添加二级评论
+                CommentSingleActivity.this.initInputTextMsgDialog((View) view1.getParent(), false, firstLevelBean.getHeadImg(), position);
+            }
+        });
+        //滚动事件
+        if (mRecyclerViewUtil != null) mRecyclerViewUtil.initScrollListener(rv_dialog_lists);
     }
 
     private void initInputTextMsgDialog(View view, final boolean isReply, final String headImg, final int position) {
@@ -346,5 +346,15 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mRecyclerViewUtil != null){
+            mRecyclerViewUtil.destroy();
+            mRecyclerViewUtil = null;
+        }
+        bottomSheetAdapter = null;
     }
 }

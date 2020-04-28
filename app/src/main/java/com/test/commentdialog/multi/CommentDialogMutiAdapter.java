@@ -1,7 +1,5 @@
 package com.test.commentdialog.multi;
 
-import android.app.Activity;
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -45,7 +43,6 @@ public class CommentDialogMutiAdapter extends BaseMultiItemQuickAdapter<MultiIte
 
     @Override
     protected void convert(@NonNull BaseViewHolder helper, MultiItemEntity item) {
-
         switch (item.getItemType()) {
             case CommentEntity.TYPE_COMMENT_PARENT:
                 bindCommentParent(helper, (FirstLevelBean) item);
