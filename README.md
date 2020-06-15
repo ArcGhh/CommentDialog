@@ -33,6 +33,7 @@
 ## 参考
 [Android评论回复弹框](https://blog.csdn.net/qq_32518491/article/details/85000421)
 
+[解决BottomSheetDialog中的RecyclerView要点击两次才能触发点击事件的问题](https://blog.csdn.net/qq_25138543/article/details/105733221)
 
 
 ### about
