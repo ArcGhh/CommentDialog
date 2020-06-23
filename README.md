@@ -17,14 +17,14 @@
 ## 具体实现
 外框是BottomSheetDialog，布局主要是一个Recyclerview，由于二级评论的原因，我用了2种方式去实现，主要是数据的区别
 
-1. 整个列表使用Recyclerview：一级评论为Item 二级评论使用LinearLayout来动态增加，其中回复的二级评论使用富文本SpannableString，可点击
+1、整个列表使用Recyclerview：一级评论为Item 二级评论使用LinearLayout来动态增加，其中回复的二级评论使用富文本SpannableString，可点击
 数据格式List<一级评论bean>， 一级评论的实体类中包含了二级评论列表 
 在adapter中把二级评论List传入自定义的Linearlayout 让其动态添加view
 
 未解决问题：由于动态添加的view过多时 会使得相应的Item高度过长 甚至超过整个屏幕的高度 导致滑动有些卡顿
            也许是加载数据方式不对，很多地方需要优化导致的卡顿 由于我经验尚不足，未发现具体原因
 
-2. 整个列表使用Recyclerview：一级评论、二级评论、展示更多均为Item adapter根据类型去加载相应的item
+2、整个列表使用Recyclerview：一级评论、二级评论、展示更多均为Item adapter根据类型去加载相应的item
 也就是说任何一条评论都为一个item 根据普通的多类型列表去加载即可 
 暂未发现问题 滑动也比较流畅等 
 
