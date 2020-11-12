@@ -52,7 +52,6 @@ public class InputTextMsgDialog extends AppCompatDialog {
     public InputTextMsgDialog(@NonNull Context context, int theme) {
         super(context, theme);
         this.mContext = context;
-        this.getWindow().setWindowAnimations(R.style.main_menu_animstyle);
         init();
         setLayout();
     }
@@ -154,15 +153,6 @@ public class InputTextMsgDialog extends AppCompatDialog {
             }
         });
 
-        rlDlg = findViewById(R.id.rl_outside_view);
-        rlDlg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v.getId() != R.id.rl_inputdlg_view)
-                    InputTextMsgDialog.this.dismiss();
-            }
-        });
-
         rldlgview.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
@@ -180,19 +170,13 @@ public class InputTextMsgDialog extends AppCompatDialog {
                 mLastDiff = heightDifference;
             }
         });
-        rldlgview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imm.hideSoftInputFromWindow(messageTextView.getWindowToken(), 0);
-                InputTextMsgDialog.this.dismiss();
-            }
-        });
 
         setOnKeyListener(new OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
-                if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0)
+                if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0) {
                     InputTextMsgDialog.this.dismiss();
+                }
                 return false;
             }
         });
@@ -200,8 +184,6 @@ public class InputTextMsgDialog extends AppCompatDialog {
 
     private void setLayout() {
         getWindow().setGravity(Gravity.BOTTOM);
-        WindowManager m = getWindow().getWindowManager();
-        Display d = m.getDefaultDisplay();
         WindowManager.LayoutParams p = getWindow().getAttributes();
         p.width = WindowManager.LayoutParams.MATCH_PARENT;
         p.height = WindowManager.LayoutParams.WRAP_CONTENT;

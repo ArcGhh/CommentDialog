@@ -22,6 +22,7 @@ import com.test.commentdialog.bean.CommentMoreBean;
 import com.test.commentdialog.bean.FirstLevelBean;
 import com.test.commentdialog.bean.SecondLevelBean;
 import com.test.commentdialog.dialog.InputTextMsgDialog;
+import com.test.commentdialog.listener.SoftKeyBoardListener;
 import com.test.commentdialog.multi.CommentMultiActivity;
 import com.test.commentdialog.util.RecyclerViewUtil;
 import com.test.commentdialog.widget.VerticalCommentLayout;
@@ -46,6 +47,7 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
     private long totalCount = 30;//总条数不得超过它
     private int offsetY;
     private RecyclerViewUtil mRecyclerViewUtil;
+    private SoftKeyBoardListener mKeyBoardListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,6 +195,16 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
         });
         //滚动事件
         if (mRecyclerViewUtil != null) mRecyclerViewUtil.initScrollListener(rv_dialog_lists);
+        mKeyBoardListener = new SoftKeyBoardListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
+            @Override
+            public void keyBoardShow(int height) {
+            }
+
+            @Override
+            public void keyBoardHide(int height) {
+                dismissInputDialog();
+            }
+        });
     }
 
     private void initInputTextMsgDialog(View view, final boolean isReply, final String headImg, final int position) {
@@ -202,7 +214,7 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
             scrollLocation(offsetY);
         }
         if (inputTextMsgDialog == null) {
-            inputTextMsgDialog = new InputTextMsgDialog(this, R.style.dialog_center);
+            inputTextMsgDialog = new InputTextMsgDialog(this, R.style.dialog);
             inputTextMsgDialog.setmOnTextSendListener(new InputTextMsgDialog.OnTextSendListener() {
                 @Override
                 public void onTextSend(String msg) {
@@ -354,6 +366,10 @@ public class CommentSingleActivity extends AppCompatActivity implements Vertical
         if (mRecyclerViewUtil != null){
             mRecyclerViewUtil.destroy();
             mRecyclerViewUtil = null;
+        }
+        if (mKeyBoardListener != null) {
+            mKeyBoardListener.setOnSoftKeyBoardChangeListener(null);
+            mKeyBoardListener = null;
         }
         bottomSheetAdapter = null;
     }

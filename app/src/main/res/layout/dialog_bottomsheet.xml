@@ -7,22 +7,28 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="532dp"
+    android:layout_height="552dp"
     android:layout_alignParentBottom="true"
+    android:background="@drawable/shape_bg_white_corner_top_lr_dp12"
+    android:elevation="5dp"
+    android:translationY="3dp"
+    android:transformPivotY="-5dp"
+    android:outlineSpotShadowColor="@color/gray_9b"
+    android:outlineAmbientShadowColor="@color/gray_9b"
     android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/dialog_bottomsheet_rv_lists"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginTop="50dp"
-        android:background="@color/white" />
+        android:layout_height="450dp"
+        android:layout_marginTop="50dp" />
 
     <RelativeLayout
         android:id="@+id/dialog_bottomsheet_rl_title"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/select_elevation">
+
+        >
 
         <ImageView
             android:id="@+id/dialog_bottomsheet_iv_close"

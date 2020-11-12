@@ -26,6 +26,7 @@ import com.test.commentdialog.bean.CommentMoreBean;
 import com.test.commentdialog.bean.FirstLevelBean;
 import com.test.commentdialog.bean.SecondLevelBean;
 import com.test.commentdialog.dialog.InputTextMsgDialog;
+import com.test.commentdialog.listener.SoftKeyBoardListener;
 import com.test.commentdialog.util.RecyclerViewUtil;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
     private int offsetY;
     private int positionCount = 0;
     private RecyclerViewUtil mRecyclerViewUtil;
+    private SoftKeyBoardListener mKeyBoardListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,17 +177,19 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
         if (bottomSheetDialog != null) {
             return;
         }
+
+        //view
         View view = View.inflate(this, R.layout.dialog_bottomsheet, null);
         ImageView iv_dialog_close = (ImageView) view.findViewById(R.id.dialog_bottomsheet_iv_close);
         rv_dialog_lists = (RecyclerView) view.findViewById(R.id.dialog_bottomsheet_rv_lists);
         RelativeLayout rl_comment = view.findViewById(R.id.rl_comment);
-
         iv_dialog_close.setOnClickListener(v -> bottomSheetDialog.dismiss());
         rl_comment.setOnClickListener(v -> {
             //添加二级评论
             initInputTextMsgDialog(null, false, null, -1);
         });
 
+        //adapter
         bottomSheetAdapter = new CommentDialogMutiAdapter(data);
         rv_dialog_lists.setHasFixedSize(true);
         rv_dialog_lists.setLayoutManager(new LinearLayoutManager(this));
@@ -193,14 +197,12 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
         bottomSheetAdapter.setOnLoadMoreListener(this, rv_dialog_lists);
         rv_dialog_lists.setAdapter(bottomSheetAdapter);
 
-        initListener();
-
+        //dialog
         bottomSheetDialog = new BottomSheetDialog(this, R.style.dialog);
         bottomSheetDialog.setContentView(view);
         bottomSheetDialog.setCanceledOnTouchOutside(true);
         BottomSheetBehavior mDialogBehavior = BottomSheetBehavior.from((View) view.getParent());
         mDialogBehavior.setPeekHeight(getWindowHeight());
-
         //dialog滑动监听
         mDialogBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -220,6 +222,8 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
                 CommentMultiActivity.this.slideOffset = slideOffset;//记录滑动值
             }
         });
+
+        initListener();
     }
 
     private void initListener() {
@@ -290,6 +294,17 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
         });
         //滚动事件
         if (mRecyclerViewUtil != null) mRecyclerViewUtil.initScrollListener(rv_dialog_lists);
+
+        mKeyBoardListener = new SoftKeyBoardListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
+            @Override
+            public void keyBoardShow(int height) {
+            }
+
+            @Override
+            public void keyBoardHide(int height) {
+                dismissInputDialog();
+            }
+        });
     }
 
     private void initInputTextMsgDialog(View view, final boolean isReply, final MultiItemEntity item, final int position) {
@@ -299,7 +314,7 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
             scrollLocation(offsetY);
         }
         if (inputTextMsgDialog == null) {
-            inputTextMsgDialog = new InputTextMsgDialog(this, R.style.dialog_center);
+            inputTextMsgDialog = new InputTextMsgDialog(this, R.style.dialog);
             inputTextMsgDialog.setmOnTextSendListener(new InputTextMsgDialog.OnTextSendListener() {
                 @Override
                 public void onTextSend(String msg) {
@@ -440,6 +455,10 @@ public class CommentMultiActivity extends AppCompatActivity implements BaseQuick
         if (mRecyclerViewUtil != null){
             mRecyclerViewUtil.destroy();
             mRecyclerViewUtil = null;
+        }
+        if (mKeyBoardListener != null) {
+            mKeyBoardListener.setOnSoftKeyBoardChangeListener(null);
+            mKeyBoardListener = null;
         }
         bottomSheetAdapter = null;
         super.onDestroy();
