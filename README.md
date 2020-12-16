@@ -5,6 +5,11 @@
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191223183944984.jpg)
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191223184007906.jpg)
 
+看不到图片的可以访问链接：
+https://img-blog.csdnimg.cn/20191223183926488.jpg
+https://img-blog.csdnimg.cn/20191223183944984.jpg
+https://img-blog.csdnimg.cn/20191223184007906.jpg
+
 
 最近公司有个需求，就是仿抖音弹窗评论，我也是在网上找了一些资料，
 并未找到有人实现了此功能，于是我就根据一些资料自己去实现。
